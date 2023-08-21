@@ -1,6 +1,8 @@
 package com.tmf.rinha.web;
 
+import com.tmf.rinha.service.PessoaService;
 import com.tmf.rinha.web.dto.AddPessoaDTO;
+import com.tmf.rinha.web.dto.PessoaDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,28 +20,37 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/pessoas")
-public class PessoasController {
+public class PessoaController {
+
+    private final PessoaService pessoaService;
+
+    public PessoaController(PessoaService pessoaService) {
+        this.pessoaService = pessoaService;
+    }
 
     @PostMapping
     public ResponseEntity<?> addPessoa(@Valid @RequestBody AddPessoaDTO addPessoaDTO) {
-        final UUID id = null;
-        var uri = URI.create("/pessoas/" + id);
+
+        final PessoaDTO pessoaDTO = pessoaService.addPessoa(addPessoaDTO);
+
+        var uri = URI.create("/pessoas/" + pessoaDTO.id());
         return ResponseEntity.created(uri).build();
     }
 
     @GetMapping("/{uuid}")
     public ResponseEntity<?> retrievePessoa(@PathVariable UUID uuid) {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.of(pessoaService.retrieveById(uuid));
     }
 
     @GetMapping
-    public ResponseEntity<?> retrievePessoaByQuery(@RequestParam(name = "t", required = true) String query) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> retrievePessoaByQuery(@RequestParam(name = "t", required = true) String queryTerm) {
+        return ResponseEntity.ok(pessoaService.retrieveByQueryTerm(queryTerm));
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)

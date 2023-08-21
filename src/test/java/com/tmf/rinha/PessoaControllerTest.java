@@ -1,11 +1,12 @@
-package com.tmf.rinha.web;
+package com.tmf.rinha;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,12 +16,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.UUID;
 
-@WebMvcTest
+@SpringBootTest
 @AutoConfigureMockMvc
-public class PessoasControllerTest {
-
-    @Autowired
-    PessoasController pessoasController;
+@AutoConfigureTestDatabase
+public class PessoaControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -89,14 +88,14 @@ public class PessoasControllerTest {
 
     @Test
     public void shouldRetrievePessoaWhenAValidIdIsGiven() throws Exception {
-        final var id = UUID.randomUUID();
+        final var id = UUID.fromString("b9d8c7db-d26c-4e35-9b54-414166ed2f30");
         final var expectedPessoa = """
             {
-                "id" : %s
+                "id" : %s,
                 "apelido" : "catarina",
                 "nome" : "Catarina de Aragão",
                 "nascimento" : "1485-12-15",
-                "stack" : []
+                "stack" : null
             }
             """.formatted(id);
 
@@ -115,14 +114,27 @@ public class PessoasControllerTest {
     }
 
     @Test
-    public void shouldReturnOkStatusEvenThoughNoPersonIsRetrieved() throws Exception {
-        performPessoaGetByQuery("NonExistingParam").andExpectAll(
+    public void shouldReturnPessoasWhenSearchingByTerms() throws Exception {
+        performPessoaGetByTerm("catarina").andExpectAll(
+            MockMvcResultMatchers.status().isOk(),
+            MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2))
+        );
+
+        performPessoaGetByTerm("racle").andExpectAll(
+            MockMvcResultMatchers.status().isOk(),
+            MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1))
+        );
+    }
+
+    @Test
+    public void shouldReturnOkStatusEvenThoughNoPessoaIsRetrievedWhenSearchingByTerm() throws Exception {
+        performPessoaGetByTerm("NonExistingParam").andExpectAll(
             MockMvcResultMatchers.status().isOk()
         );
     }
 
     @Test
-    public void test() throws Exception {
+    public void shouldReturnBadRequestStatusWhenQueryTermIsMissed() throws Exception {
         performPessoaGetOmittingQueryParam().andExpect(
             MockMvcResultMatchers.status().isBadRequest()
         );
@@ -140,10 +152,10 @@ public class PessoasControllerTest {
             .get("/pessoas/{id}", withId));
     }
 
-    private ResultActions performPessoaGetByQuery(String withQuery) throws Exception {
+    private ResultActions performPessoaGetByTerm(String term) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders
             .get("/pessoas")
-            .queryParam("t", withQuery));
+            .queryParam("t", term));
     }
 
     private ResultActions performPessoaGetOmittingQueryParam() throws Exception {
