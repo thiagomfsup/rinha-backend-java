@@ -1,0 +1,19 @@
+version: '3.5'
+services:
+    db: # Banco de dados
+        image: postgres
+        hostname: db
+        environment:
+            POSTGRES_USER: rinhero
+            POSTGRES_PASSWORD: 1q2w3e
+            POSTGRES_DB: rinhadb
+        command: postgres -c shared_buffers=256MB
+        volumes:
+          - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - 5432:5432
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.85'
+                    memory: '1.4GB'
