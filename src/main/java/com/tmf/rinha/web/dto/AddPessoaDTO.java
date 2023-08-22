@@ -10,6 +10,7 @@ public record AddPessoaDTO(
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     String nome,
     @NotBlank(message = "Apelido não pode ser null ou vazio")
+    @Size(max = 32, message = "Apelido deve ter no máximo 32 caracteres")
     String apelido,
     @NotBlank(message = "data de nascimento deve ser informada")
     String nascimento,

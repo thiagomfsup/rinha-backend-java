@@ -23,7 +23,7 @@ public class PessoaServiceImpl implements PessoaService {
     }
 
     @Override
-    public PessoaDTO addPessoa(AddPessoaDTO pessoa) {
+    public UUID addPessoa(AddPessoaDTO pessoa) {
         PessoaEntity pessoaEntity = new PessoaEntity();
         pessoaEntity.setId(UUID.randomUUID())
             .setApelido(pessoa.apelido())
@@ -31,10 +31,7 @@ public class PessoaServiceImpl implements PessoaService {
             .setNascimento(pessoa.nascimento())
             .setStack(stackListToString(pessoa.stack()));
 
-        final PessoaEntity addedPessoa = repository.save(pessoaEntity);
-
-        return new PessoaDTO(addedPessoa.getId(), addedPessoa.getNome(), addedPessoa.getApelido(),
-            addedPessoa.getNascimento(), stringToStackList(addedPessoa.getStack()));
+        return repository.save(pessoaEntity).getId();
     }
 
     @Override
@@ -49,6 +46,11 @@ public class PessoaServiceImpl implements PessoaService {
             .map(entity -> new PessoaDTO(entity.getId(), entity.getNome(), entity.getApelido(),
                  entity.getNascimento(), stringToStackList(entity.getStack())))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public long countPessoas() {
+        return repository.count();
     }
 
     private String stackListToString(List<String> stack) {

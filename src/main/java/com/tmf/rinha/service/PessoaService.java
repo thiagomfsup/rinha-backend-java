@@ -9,7 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PessoaService {
-    PessoaDTO addPessoa(AddPessoaDTO pessoa);
+    UUID addPessoa(AddPessoaDTO pessoa);
     Optional<PessoaEntity> retrieveById(UUID id);
     List<PessoaDTO> retrieveByQueryTerm(String queryTerm);
+    long countPessoas();
 }

@@ -93,7 +93,7 @@ public class PessoaControllerTest {
             {
                 "id" : %s,
                 "apelido" : "catarina",
-                "nome" : "Catarina de Aragão",
+                "nome" : "Catarina de Aragao",
                 "nascimento" : "1485-12-15",
                 "stack" : null
             }
@@ -128,7 +128,7 @@ public class PessoaControllerTest {
 
     @Test
     public void shouldReturnOkStatusEvenThoughNoPessoaIsRetrievedWhenSearchingByTerm() throws Exception {
-        performPessoaGetByTerm("NonExistingParam").andExpectAll(
+        performPessoaGetByTerm("NonExistingParam").andExpect(
             MockMvcResultMatchers.status().isOk()
         );
     }
@@ -138,6 +138,14 @@ public class PessoaControllerTest {
         performPessoaGetOmittingQueryParam().andExpect(
             MockMvcResultMatchers.status().isBadRequest()
         );
+    }
+
+    @Test
+    public void shouldCountNumberOfPessoas() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/contagem-pessoas")).andExpectAll(
+                MockMvcResultMatchers.status().isOk(),
+                MockMvcResultMatchers.content().string("3")
+            );
     }
 
     private ResultActions performPessoaPost(String withBody) throws Exception {
