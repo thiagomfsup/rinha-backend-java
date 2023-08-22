@@ -3,7 +3,6 @@ package com.tmf.rinha.web;
 import com.tmf.rinha.service.PessoaService;
 import com.tmf.rinha.web.dto.AddPessoaDTO;
 import com.tmf.rinha.web.dto.PessoaDTO;
-import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,19 @@ public class PessoaController {
     }
 
     @PostMapping("/pessoas")
-    public ResponseEntity<?> addPessoa(@Valid @RequestBody AddPessoaDTO addPessoaDTO) {
+    public ResponseEntity<?> addPessoa(@RequestBody AddPessoaDTO addPessoaDTO) {
+        final String nome = addPessoaDTO.nome();
+        final String apelido = addPessoaDTO.apelido();
+        final String nascimento = addPessoaDTO.nascimento();
+        final List<String> stack = addPessoaDTO.stack();
+
+        if (nome == null || nome.isBlank() || nome.length() > 100 ||
+            apelido == null || apelido.isBlank() || apelido.length() > 32 ||
+            nascimento == null || nascimento.isBlank() ||
+            (stack != null && stack.stream().anyMatch(s -> s.length() > 32) )) {
+
+            return ResponseEntity.unprocessableEntity().build();
+        }
 
         var uri = URI.create("/pessoas/" + pessoaService.addPessoa(addPessoaDTO));
         return ResponseEntity.created(uri).build();
