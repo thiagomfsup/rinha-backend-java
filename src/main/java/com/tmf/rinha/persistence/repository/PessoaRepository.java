@@ -10,6 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PessoaRepository extends CrudRepository<PessoaEntity, UUID> {
-    @Query("FROM PessoaEntity p WHERE p.nome LIKE %:term% OR p.apelido LIKE %:term% OR p.stack LIKE %:term%")
-    List<PessoaEntity> findTop50ByTerm(@Param("term") String queryTerm, Pageable pageable);
+    @Query(value = "SELECT * FROM pessoas p WHERE p.search LIKE %:term% LIMIT 50", nativeQuery = true)
+    List<PessoaEntity> findTop50ByTerm(@Param("term") String queryTerm);
 }

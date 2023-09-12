@@ -4,7 +4,6 @@ import com.tmf.rinha.persistence.entity.PessoaEntity;
 import com.tmf.rinha.persistence.repository.PessoaRepository;
 import com.tmf.rinha.web.dto.AddPessoaDTO;
 import com.tmf.rinha.web.dto.PessoaDTO;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -41,7 +40,7 @@ public class PessoaServiceImpl implements PessoaService {
 
     @Override
     public List<PessoaDTO> retrieveByQueryTerm(String queryTerm) {
-        return repository.findTop50ByTerm(queryTerm, Pageable.ofSize(50))
+        return repository.findTop50ByTerm(queryTerm)
             .stream()
             .map(entity -> new PessoaDTO(entity.getId(), entity.getNome(), entity.getApelido(),
                  entity.getNascimento(), stringToStackList(entity.getStack())))

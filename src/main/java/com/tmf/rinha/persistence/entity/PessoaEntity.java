@@ -1,13 +1,10 @@
 package com.tmf.rinha.persistence.entity;
 
-import com.tmf.rinha.web.dto.PessoaDTO;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +16,8 @@ public class PessoaEntity {
     private String apelido;
     private String nascimento;
     private String stack;
+    @Transient
+    private String search;
 
     public UUID getId() {
         return id;

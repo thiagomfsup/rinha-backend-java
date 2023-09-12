@@ -92,7 +92,7 @@ public class PessoaControllerTest {
         final var expectedPessoa = """
             {
                 "id" : %s,
-                "apelido" : "catarina",
+                "apelido" : "catarinaA",
                 "nome" : "Catarina de Aragao",
                 "nascimento" : "1485-12-15",
                 "stack" : null
